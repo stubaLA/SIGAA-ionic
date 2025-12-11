@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { addIcons } from 'ionicons';
@@ -20,11 +20,7 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonFab,
-  IonFabButton,
-  IonFabList,
   IonHeader,
-  IonIcon,
   IonItemDivider,
   IonItemGroup,
   IonItemOption,
@@ -35,18 +31,15 @@ import {
   IonListHeader,
   IonMenuButton,
   IonRouterOutlet,
-  IonSearchbar,
-  IonSegment,
-  IonSegmentButton,
   IonTitle,
   IonToolbar,
   LoadingController,
   ModalController,
   ToastController,
 } from '@ionic/angular/standalone';
-import { Group, Session } from '../../interfaces/conference.interfaces';
+import { Matricula } from '../../interfaces/matricula';
 import { ConferenceService } from '../../providers/conference.service';
-import { UserService } from '../../providers/user.service';
+import { MatriculaService } from '../../providers/matricula.service';
 import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
 
 @Component({
@@ -57,18 +50,11 @@ import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
         IonHeader,
         IonToolbar,
         IonButtons,
-        IonSegment,
-        IonSegmentButton,
         IonContent,
         IonTitle,
-        IonSearchbar,
         IonButton,
-        IonIcon,
         IonList,
         IonListHeader,
-        IonFab,
-        IonFabButton,
-        IonFabList,
         FormsModule,
         IonItemSliding,
         LowerCasePipe,
@@ -88,29 +74,22 @@ import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
         Config,
     ]
 })
-export class SchedulePage implements OnInit {
+export class SchedulePage {
   alertCtrl = inject(AlertController);
-  confService = inject(ConferenceService);
   loadingCtrl = inject(LoadingController);
   modalCtrl = inject(ModalController);
   router = inject(Router);
   routerOutlet = inject(IonRouterOutlet);
   toastCtrl = inject(ToastController);
-  user = inject(UserService);
+  matriculaService = inject(MatriculaService);
   config = inject(Config);
+  matriculaConfirmada = false;
 
   // Gets a reference to the list element
   @ViewChild('scheduleList', { static: true }) scheduleList: IonList;
 
-  ios: boolean;
-  dayIndex = 0;
-  queryText = '';
-  segment = 'all';
-  excludeTrackNames: string[] = [];
-  shownSessions: number;
-  groups: Group[] = [];
-  confDate: string;
-  showSearchbar: boolean;
+  matriculas : Matricula[] = [];
+  matriculasLidas = false;
 
   constructor() {
     addIcons({
@@ -124,114 +103,31 @@ export class SchedulePage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.updateSchedule();
-    this.ios = this.config.get('mode') === 'ios';
-  }
-
-  updateSchedule() {
-    // Close any open sliding items when the schedule updates
-    if (this.scheduleList) {
-      this.scheduleList.closeSlidingItems();
+  ionViewWillEnter() {
+    if(this.matriculasLidas) {
+      this.matriculas = this.matriculaService.search();
     }
-
-    this.confService
-      .getTimeline(
-        this.dayIndex,
-        this.queryText,
-        this.excludeTrackNames,
-        this.segment
-      )
-      .subscribe(data => {
-        this.shownSessions = data.shownSessions;
-        this.groups = data.groups;
+    else {  
+      this.matriculaService.getMatriculas().subscribe(data => {
+        this.matriculas = data.matriculas;
       });
+      this.matriculasLidas = true;
+    }  
+  }
+    
+  confirmarMatricula() {
+    this.matriculaConfirmada = true;
+    this.matriculaService.confirmarMatricula();
   }
 
-  async presentFilter() {
-    const modal = await this.modalCtrl.create({
-      component: ScheduleFilterPage,
-      presentingElement: this.routerOutlet.nativeEl,
-      componentProps: { excludedTracks: this.excludeTrackNames },
-    });
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-      this.excludeTrackNames = data;
-      this.updateSchedule();
+  verificarMatricula() {
+    this.matriculaConfirmada = this.matriculaService.verificarMatriculaConfirmada();
+    for(let matricula of this.matriculas) {
+      if(matricula.status == 'PreMatricula') {
+        return true;
+      }
     }
+    return false;
   }
 
-  async addFavorite(slidingItem: IonItemSliding, sessionData: Session) {
-    if (this.user.hasFavorite(sessionData.name)) {
-      // Prompt to remove favorite
-      this.removeFavorite(slidingItem, sessionData, 'Favorite already added');
-    } else {
-      // Add as a favorite
-      this.user.addFavorite(sessionData.name);
-
-      // Close the open item
-      slidingItem.close();
-
-      // Create a toast
-      const toast = await this.toastCtrl.create({
-        header: `${sessionData.name} was successfully added as a favorite.`,
-        duration: 3000,
-        buttons: [
-          {
-            text: 'Close',
-            role: 'cancel',
-          },
-        ],
-      });
-
-      // Present the toast at the bottom of the page
-      await toast.present();
-    }
-  }
-
-  async removeFavorite(
-    slidingItem: IonItemSliding,
-    sessionData: Session,
-    title: string
-  ) {
-    const alert = await this.alertCtrl.create({
-      header: title,
-      message: 'Would you like to remove this session from your favorites?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            // they clicked the cancel button, do not remove the session
-            // close the sliding item and hide the option buttons
-            slidingItem.close();
-          },
-        },
-        {
-          text: 'Remove',
-          handler: () => {
-            // they want to remove this session from their favorites
-            this.user.removeFavorite(sessionData.name);
-            this.updateSchedule();
-
-            // close the sliding item and hide the option buttons
-            slidingItem.close();
-          },
-        },
-      ],
-    });
-    // now present the alert on top of all other content
-    await alert.present();
-  }
-
-  async openSocial(network: string, fab: IonFab) {
-    const loading = await this.loadingCtrl.create({
-      message: `Posting to ${network}`,
-      duration: Math.random() * 1000 + 500,
-    });
-    await loading.present();
-    await loading.onWillDismiss();
-    fab.close();
-  }
 }
