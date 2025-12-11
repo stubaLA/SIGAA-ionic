@@ -27,6 +27,8 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import {
+  list,
+  listOutline,
   calendarOutline,
   hammer,
   help,
@@ -76,22 +78,24 @@ export class AppComponent implements OnInit {
 
   appPages = [
     {
-      title: 'Schedule',
+      title: 'Matrícula 2026.1',
       url: '/app/tabs/schedule',
       icon: 'calendar',
     },
     {
-      title: 'Speakers',
+      title: 'Lista de Oferta',
       url: '/app/tabs/speakers',
-      icon: 'people',
+      icon: 'list',
     },
+/*
     {
       title: 'Map',
       url: '/app/tabs/map',
       icon: 'map',
     },
+*/    
     {
-      title: 'About',
+      title: 'Sobre',
       url: '/app/tabs/about',
       icon: 'information-circle',
     },
@@ -101,6 +105,8 @@ export class AppComponent implements OnInit {
 
   constructor() {
     addIcons({
+      list,
+      listOutline,
       calendarOutline,
       peopleOutline,
       mapOutline,
@@ -166,6 +172,7 @@ export class AppComponent implements OnInit {
   listenForLoginEvents() {
     window.addEventListener('user:login', () => {
       this.updateLoggedInStatus(true);
+      this.router.navigateByUrl('/app/tabs/schedule');
     });
 
     window.addEventListener('user:signup', () => {
@@ -174,6 +181,24 @@ export class AppComponent implements OnInit {
 
     window.addEventListener('user:logout', () => {
       this.updateLoggedInStatus(false);
+    });
+
+    window.addEventListener('user:loginError', async () => {
+      this.updateLoggedInStatus(false);
+      const toast = await this.toastCtrl.create({
+        message: 'Não foi possível validar as informações. Por favor, verifique os seus dados e tente novamente.',
+        position: 'top',
+        duration: 3000
+        /*        buttons: [
+                  {
+                    role: 'cancel',
+                    text: 'Ok'
+                  }
+                ]*/
+      });
+
+      await toast.present();
+      console.log('');
     });
   }
 
