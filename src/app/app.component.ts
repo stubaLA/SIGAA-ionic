@@ -44,28 +44,28 @@ import {
 import { UserService } from './providers/user.service';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    imports: [
-        RouterLink,
-        RouterLinkActive,
-        IonRouterOutlet,
-        IonLabel,
-        IonIcon,
-        IonMenuToggle,
-        IonToggle,
-        IonList,
-        IonListHeader,
-        IonItem,
-        IonContent,
-        IonMenu,
-        IonSplitPane,
-        IonApp,
-        FormsModule,
-    ],
-    providers: [MenuController, ToastController],
-    encapsulation: ViewEncapsulation.None
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    IonRouterOutlet,
+    IonLabel,
+    IonIcon,
+    IonMenuToggle,
+    IonToggle,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonContent,
+    IonMenu,
+    IonSplitPane,
+    IonApp,
+    FormsModule,
+  ],
+  providers: [MenuController, ToastController],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
   private router = inject(Router);
@@ -87,13 +87,13 @@ export class AppComponent implements OnInit {
       url: '/app/tabs/speakers',
       icon: 'list',
     },
-/*
-    {
-      title: 'Map',
-      url: '/app/tabs/map',
-      icon: 'map',
-    },
-*/    
+    /*
+        {
+          title: 'Map',
+          url: '/app/tabs/map',
+          icon: 'map',
+        },
+    */
     {
       title: 'Sobre',
       url: '/app/tabs/about',
@@ -199,6 +199,17 @@ export class AppComponent implements OnInit {
 
       await toast.present();
       console.log('');
+    });
+
+    window.addEventListener('user:lockedOut', async () => {
+      this.updateLoggedInStatus(false);
+      const toast = await this.toastCtrl.create({
+        message: 'Limite de tentativas excedido. Espere 10min e tente novamente',
+        position: 'top',
+        duration: 3000
+      });
+
+      await toast.present();
     });
   }
 

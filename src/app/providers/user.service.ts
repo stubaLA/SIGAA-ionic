@@ -17,14 +17,18 @@ export class UserService {
   favorites: string[] = [];
   HAS_LOGGED_IN = 'hasLoggedIn';
   HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
+  LOGIN_ATTEMPTS = 'loginAttempts';
+  LOCKOUT_TIMESTAMP = 'lockoutTimestamp';
+  MAX_LOGIN_ATTEMPTS = 5;
+  LOCKOUT_DURATION = 10 * 60 * 1000; // 10 minutes
 
   data: UserData | null = null;
 
   constructor(
   ) {
-    this.getUsers().subscribe(()=>{
+    this.getUsers().subscribe(() => {
       console.log(this.data);
-    })  
+    })
   }
 
   load() {
@@ -62,30 +66,51 @@ export class UserService {
     }
   }
 
-  login(login: UserOptions) : Promise<boolean> {
+  async login(login: UserOptions): Promise<boolean> {
     console.log('login');
+
+    const lockoutTimestamp = await this.storage.get(this.LOCKOUT_TIMESTAMP);
+    if (lockoutTimestamp) {
+      if (Date.now() < lockoutTimestamp) {
+        window.dispatchEvent(new CustomEvent('user:lockedOut'));
+        return false;
+      }
+      await this.storage.remove(this.LOCKOUT_TIMESTAMP);
+      await this.storage.remove(this.LOGIN_ATTEMPTS);
+    }
+
     var hasLoggedIn = false;
 
-    for(var i = 0; i < this.data.users.length; i++) {
-      if(this.data.users[i].username == login.username && this.data.users[i].password == login.password) {
+    for (var i = 0; i < this.data.users.length; i++) {
+      if (this.data.users[i].username == login.username && this.data.users[i].password == login.password) {
         hasLoggedIn = true;
         break;
       }
     }
-    console.log(hasLoggedIn);
-    if(hasLoggedIn) {
+
+    if (hasLoggedIn) {
+      await this.storage.remove(this.LOGIN_ATTEMPTS);
+      await this.storage.remove(this.LOCKOUT_TIMESTAMP);
       return this.storage.set(this.HAS_LOGGED_IN, true).then(() => {
         this.setUsername(login.username);
         return window.dispatchEvent(new CustomEvent('user:login'));
       });
-    }
-    else {
-      return this.storage.set(this.HAS_LOGGED_IN, false).then(() => {
-        return window.dispatchEvent(new CustomEvent('user:loginError'));
-      });
+    } else {
+      let attempts = (await this.storage.get(this.LOGIN_ATTEMPTS)) || 0;
+      attempts++;
+      await this.storage.set(this.LOGIN_ATTEMPTS, attempts);
+
+      if (attempts >= this.MAX_LOGIN_ATTEMPTS) {
+        await this.storage.set(this.LOCKOUT_TIMESTAMP, Date.now() + this.LOCKOUT_DURATION);
+        window.dispatchEvent(new CustomEvent('user:lockedOut'));
+      } else {
+        return this.storage.set(this.HAS_LOGGED_IN, false).then(() => {
+          return window.dispatchEvent(new CustomEvent('user:loginError'));
+        });
+      }
+      return false;
     }
   }
-
   signup(username: string): Promise<boolean> {
     return this.storage.set(this.HAS_LOGGED_IN, true).then(() => {
       this.setUsername(username);
@@ -119,9 +144,9 @@ export class UserService {
       return value === true;
     });
   }
+
   getUsers() {
     console.log('getUsers');
     return this.load().pipe(map((data: UserData) => data));
   }
-
 }
