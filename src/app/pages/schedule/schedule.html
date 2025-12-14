@@ -10,24 +10,24 @@
 <ion-content fullscreen="true">
   @if( matriculas.length > 0) {
   <ion-list #scheduleList>
-      @for (matricula of matriculas; track matricula.id) {
-        <ion-item routerLink="/app/tabs/schedule/session/{{matricula.id}}">
-          <ion-label>
-            <h3>{{matricula.turma.disciplina.codigo}} - {{matricula.turma.disciplina.nome}}</h3>
-            <h3>{{matricula.turma.codigo}}</h3>
-            @for (horario of matricula.turma.horario; track horario.dia) {
-            <p>{{horario.dia}}: {{horario.horaInicio}} &mdash; {{horario.horaFim}}</p>
-            }  
-            <p>
-              {{matricula.status}}
-            </p>
-          </ion-label>
-        </ion-item>
+    @for (matricula of matriculas; track matricula.id) {
+    <ion-item routerLink="/app/tabs/schedule/session/{{matricula.id}}">
+      <ion-label>
+        <h3>{{matricula.turma.disciplina.codigo}} - {{matricula.turma.disciplina.nome}}</h3>
+        <h3>{{matricula.turma.codigo}}</h3>
+        @for (horario of matricula.turma.horario; track horario.dia) {
+        <p>{{horario.dia}}: {{horario.horaInicio}} &mdash; {{horario.horaFim}}</p>
+        }
+        <p>
+          {{matricula.status}}
+        </p>
+      </ion-label>
+    </ion-item>
 
-      }
+    }
   </ion-list>
   }
   @if (!matriculaConfirmada) {
-    <ion-button (click)="confirmarMatricula()" disabled="{{verificarMatricula()}}">Confirmar</ion-button>
+  <ion-button (click)="confirmarMatricula()" disabled="{{verificarMatricula()}}">Solicitar Matrícula</ion-button>
   }
 </ion-content>
