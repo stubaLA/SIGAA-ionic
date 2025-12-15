@@ -35,8 +35,6 @@ export class MatriculaService {
   }
 
   processData(data: MatriculaData): MatriculaData {
-    // just some good 'ol JS fun with objects and arrays
-    // build up the data by linking speakers to sessions
     console.log('processData');
     this.data = data;
     return this.data;

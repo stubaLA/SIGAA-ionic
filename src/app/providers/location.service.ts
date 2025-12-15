@@ -16,7 +16,6 @@ export class LocationService {
     return this.http.get<any>('assets/data/data.json').pipe(
       map(data => {
         if (data.map && Array.isArray(data.map)) {
-          // Add IDs to locations
           const locations = data.map.map((location: any, index: number) => ({
             ...location,
             id: index + 1
@@ -29,7 +28,6 @@ export class LocationService {
       }),
       catchError(error => {
         console.error('Error loading locations:', error);
-        // Set default locations if data cannot be loaded
         const defaultLocations = [{
           id: 1,
           name: 'Monona Terrace Convention Center',

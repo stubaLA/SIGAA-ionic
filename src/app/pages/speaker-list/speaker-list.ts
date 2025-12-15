@@ -54,7 +54,6 @@ export class SpeakerListPage {
 
   ionViewDidEnter() {
     this.disciplinaService.getDisciplinas().subscribe(data => {
-//      this.disciplinas = data.disciplinas;
     });
   }
 
@@ -70,12 +69,6 @@ export class SpeakerListPage {
       codigo: val
     });
     console.log(this.disciplinas);
-    /*
-    this.disciplinas = this.disciplinaData.query({
-      nome: val,
-      codigo: val
-    });
-    */
 
   }
 

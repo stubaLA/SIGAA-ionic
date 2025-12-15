@@ -61,7 +61,7 @@ ion-toolbar ion-menu-button {
 
   background: var(--ion-background-color, #ffffff);
 
-  z-index: 2; // display rounded border above header image
+  z-index: 2;
 }
 
 .about-info h3 {
@@ -88,9 +88,6 @@ ion-toolbar ion-menu-button {
   --width: 336px;
 }
 
-/*
- * iOS Only
- */
 
 .ios .about-info {
   --ion-padding: 19px;

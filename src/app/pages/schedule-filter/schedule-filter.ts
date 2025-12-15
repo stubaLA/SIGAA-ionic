@@ -83,7 +83,6 @@ export class ScheduleFilterPage {
   ionViewWillEnter() {
     this.ios = this.config.get('mode') === 'ios';
 
-    // passed in array of track names that should be excluded (unchecked)
     const excludedTrackNames = this.navParams.get('excludedTracks');
 
     this.confService.getTracks().subscribe(tracks => {
@@ -94,20 +93,17 @@ export class ScheduleFilterPage {
           isChecked: excludedTrackNames.indexOf(track.name) === -1,
         });
       });
-      // Sort tracks alphabetically by name
       this.tracks.sort((a, b) => a.name.localeCompare(b.name));
     });
   }
 
   selectAll(check: boolean) {
-    // set all to checked or unchecked
     this.tracks.forEach(track => {
       track.isChecked = check;
     });
   }
 
   applyFilters() {
-    // Pass back a new array of track names to exclude
     const excludedTrackNames = this.tracks
       .filter(c => !c.isChecked)
       .map(c => c.name);
@@ -115,8 +111,6 @@ export class ScheduleFilterPage {
   }
 
   dismiss(data?: string[]) {
-    // using the injected ModalController this page
-    // can "dismiss" itself and pass back data
     this.modalCtrl.dismiss(data);
   }
 }

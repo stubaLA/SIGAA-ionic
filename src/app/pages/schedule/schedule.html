@@ -64,25 +64,21 @@
 
   <div class="schedule-grid-container">
     <div class="schedule-grid">
-      <!-- Header Row -->
       <div class="grid-header-corner"></div>
       @for (day of days; track day) {
       <div class="grid-header-day">{{ day }}</div>
       }
 
-      <!-- Time Labels -->
       @for (slot of timeSlots; track slot.start) {
       <div class="grid-time-label" [style.grid-row]="timeMap[slot.start]">{{ slot.label }}</div>
       }
 
-      <!-- Grid Cells (Background) -->
       @for (slot of timeSlots; track slot.start) {
       @for (day of days; track day) {
       <div class="grid-cell" [style.grid-row]="timeMap[slot.start]" [style.grid-column]="dayMap[day]"></div>
       }
       }
 
-      <!-- Class Blocks -->
       @for (event of gridEvents; track $index) {
       <div class="class-block" [style.grid-column]="event.col" [style.grid-row]="event.row"
         [style.background-color]="event.color">

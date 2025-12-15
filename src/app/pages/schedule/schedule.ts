@@ -93,9 +93,6 @@ export class SchedulePage {
 
   segment = 'list';
   days = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB', 'DOM'];
-  // Standard start times for slots. 
-  // We can assume fixed slots or dynamic. Fixed is easier for now based on data.
-  // Using strings for simplified matching.
   timeSlots = [
     { start: '08:00', label: '08:00 - 09:50' },
     { start: '10:00', label: '10:00 - 11:50' },
@@ -107,13 +104,10 @@ export class SchedulePage {
     { start: '22:00', label: '22:00 - 23:50' }
   ];
 
-  // Helper mapping for grid columns (Time + 7 Days = 8 columns)
-  // Time column is 1. SEG is 2, TER is 3...
   dayMap = {
     'SEG': 2, 'TER': 3, 'QUA': 4, 'QUI': 5, 'SEX': 6, 'SAB': 7, 'DOM': 8
   };
 
-  // Helper mapping for grid rows. 08:00 is row 2 (row 1 is header).
   timeMap = {
     '08:00': 2, '10:00': 3, '12:00': 4, '14:00': 5,
     '16:00': 6, '18:00': 7, '20:00': 8, '22:00': 9
@@ -123,7 +117,6 @@ export class SchedulePage {
     if (this.timeMap[horaInicio]) {
       return this.timeMap[horaInicio];
     }
-    // Se não encontrar exato, tenta encontrar o slot mais próximo
     const [hours, minutes] = horaInicio.split(':').map(Number);
     const timeInMinutes = hours * 60 + minutes;
     
@@ -139,7 +132,7 @@ export class SchedulePage {
 
   gridEvents: any[] = [];
 
-  // Gets a reference to the list element
+
   @ViewChild('scheduleList', { static: false }) scheduleList: IonList;
 
   matriculas: Matricula[] = [];
@@ -194,7 +187,12 @@ export class SchedulePage {
   }
 
   getColorForSubject(code: string) {
-    return '#e6f7ff'; // Azul claro
+    const colors = ['#e6f7ff', '#f9f0ff', '#fff7e6', '#e6fffa', '#fff0f6', '#f0f5ff'];
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      hash = code.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
   }
 
   confirmarMatricula() {

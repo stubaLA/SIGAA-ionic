@@ -65,7 +65,6 @@ export class MapPage implements AfterViewInit {
         this.initializeMap();
       });
 
-    // Subscribe to location changes
     this.locationService.getLocations()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -74,7 +73,6 @@ export class MapPage implements AfterViewInit {
         }
       });
 
-    // Clean up map on destroy
     this.destroyRef.onDestroy(() => {
       if (this.map) {
         this.map.remove();
@@ -85,7 +83,6 @@ export class MapPage implements AfterViewInit {
   private async initializeMap() {
     const mapEle = this.mapElement.nativeElement;
 
-    // Remove existing map if it exists
     if (this.map) {
       this.map.remove();
       this.markers.forEach(marker => marker.remove());
@@ -93,20 +90,17 @@ export class MapPage implements AfterViewInit {
     }
 
     try {
-      // Get center location
       const centerLocation = await firstValueFrom(this.locationService.getCenterLocation());
       if (!centerLocation) {
         return;
       }
 
-      // Initialize map
       this.map = L.map(mapEle, {
         center: [centerLocation.lat, centerLocation.lng],
         zoom: 16,
         preferCanvas: true
       });
 
-      // Configure default marker icon with shadow
       L.Marker.prototype.options.icon = L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         iconSize: [25, 41],
@@ -117,12 +111,10 @@ export class MapPage implements AfterViewInit {
         shadowAnchor: [12, 41]
       });
 
-      // Add tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
       }).addTo(this.map);
 
-      // Add markers for all locations
       const locations = await firstValueFrom(this.locationService.getLocations());
       if (this.map && locations) {
         locations.forEach((location: Location) => {
@@ -137,7 +129,6 @@ export class MapPage implements AfterViewInit {
 
       mapEle.classList.add('show-map');
 
-      // Force a resize after a short delay to ensure proper rendering
       setTimeout(() => {
         this.map?.invalidateSize();
       }, 100);

@@ -4,7 +4,6 @@ ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #ffffff));
 }
 
-/* Remove background transitions for switching themes */
 ion-menu ion-item {
   --transition: none;
 }
@@ -13,9 +12,6 @@ ion-item.selected {
   --color: var(--ion-color-primary);
 }
 
-/*
- * Material Design Menu
-*/
 ion-menu.md ion-list {
   padding: 20px 0;
 }
@@ -44,7 +40,6 @@ ion-menu.md ion-item {
 }
 
 ion-menu.md ion-item.selected {
-  /* stylelint-disable-next-line color-function-notation */
   --background: rgba(var(--ion-color-primary-rgb), 0.14);
 }
 
@@ -61,9 +56,6 @@ ion-menu.md ion-list:not(:last-of-type) {
   border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
 }
 
-/*
- * iOS Menu
-*/
 ion-menu.ios ion-list-header {
   margin-bottom: 8px;
 

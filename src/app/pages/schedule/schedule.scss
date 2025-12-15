@@ -8,10 +8,6 @@ ion-fab-button {
   --color: var(--ion-color-primary, #3880ff);
 }
 
-/*
- * Material Design uses the ripple for activated
- * so only style the iOS activated background
- */
 .ios ion-fab-button {
   --background-activated: var(--ion-color-step-250, #d9d9d9);
 }
@@ -24,7 +20,6 @@ ion-fab-button {
   }
 }
 
-// Grid Styles
 .schedule-grid-container {
   overflow-x: auto;
   padding: 10px;
@@ -33,15 +28,13 @@ ion-fab-button {
 
 .schedule-grid {
   display: grid;
-  // Time Column (fixed width) + 7 Days (flexible)
-  // minmax(80px, 1fr) ensures columns don't shrink too much on mobile
   grid-template-columns: 90px repeat(7, minmax(80px, 1fr));
 
   // Header Row + 8 Time Slots (approx 60px height each)
   grid-template-rows: 40px repeat(8, 70px);
 
   gap: 1px;
-  background-color: var(--ion-color-step-100, #e0e0e0); // Grid gap color
+  background-color: var(--ion-color-step-100, #e0e0e0);
   border: 1px solid var(--ion-color-step-100, #e0e0e0);
   min-width: max-content;
 }

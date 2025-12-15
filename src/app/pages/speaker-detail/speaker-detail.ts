@@ -127,17 +127,10 @@ export class SpeakerDetailPage {
         turma: turma
       });
     } else {
-      /* mensagem de turma duplicada */
       const toast = await this.toastCtrl.create({
         message: 'A turma não pode ser adiciona, pois já existe uma matrícula para o aluno nesta turma.',
         position: 'top',
         duration: 3000
-/*        buttons: [
-          {
-            role: 'cancel',
-            text: 'Ok'
-          }
-        ]*/
       });
 
       await toast.present();

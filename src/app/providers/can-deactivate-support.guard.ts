@@ -6,7 +6,6 @@ import { SupportPage } from '../pages/support/support';
 export const canDeactivateSupportPage: CanDeactivateFn<SupportPage> = async (
   component: SupportPage
 ) => {
-  // If the support message is empty we should just navigate
   if (
     !component.supportMessage ||
     component.supportMessage.trim().length === 0

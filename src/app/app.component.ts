@@ -87,13 +87,6 @@ export class AppComponent implements OnInit {
       url: '/app/tabs/speakers',
       icon: 'list',
     },
-    /*
-        {
-          title: 'Map',
-          url: '/app/tabs/map',
-          icon: 'map',
-        },
-    */
     {
       title: 'Sobre',
       url: '/app/tabs/about',
@@ -189,12 +182,6 @@ export class AppComponent implements OnInit {
         message: 'Não foi possível validar as informações. Por favor, verifique os seus dados e tente novamente.',
         position: 'top',
         duration: 3000
-        /*        buttons: [
-                  {
-                    role: 'cancel',
-                    text: 'Ok'
-                  }
-                ]*/
       });
 
       await toast.present();
