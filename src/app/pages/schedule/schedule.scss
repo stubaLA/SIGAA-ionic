@@ -33,11 +33,8 @@ ion-fab-button {
 
 .schedule-grid {
   display: grid;
-  // Time Column (fixed width) + 7 Days (flexible)
-  // minmax(80px, 1fr) ensures columns don't shrink too much on mobile
   grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
 
-  // Header Row + 8 Time Slots (approx 60px height each)
   grid-template-rows: 40px repeat(8, 70px);
 
   gap: 1px;
@@ -54,11 +51,6 @@ ion-fab-button {
   align-items: center;
   justify-content: center;
   grid-row: 1;
-  // We rely on auto-placement or explicit loops in HTML for column, 
-  // but since we are iterating days in order, flex/grid flow might work if we are careful.
-  // Actually, in HTML we didn't specify column for headers explicitly, 
-  // but grid auto-placement fills row 1. 
-  // Corner is 1, Days are 2-8.
 }
 
 .grid-header-corner {
@@ -80,7 +72,6 @@ ion-fab-button {
 
 .grid-cell {
   background: var(--ion-background-color);
-  // Grid lines created by gap
 }
 
 .class-block {
