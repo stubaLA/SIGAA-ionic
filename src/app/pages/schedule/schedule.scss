@@ -35,7 +35,7 @@ ion-fab-button {
   display: grid;
   // Time Column (fixed width) + 7 Days (flexible)
   // minmax(80px, 1fr) ensures columns don't shrink too much on mobile
-  grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
+  grid-template-columns: 90px repeat(7, minmax(80px, 1fr));
 
   // Header Row + 8 Time Slots (approx 60px height each)
   grid-template-rows: 40px repeat(8, 70px);
@@ -54,11 +54,7 @@ ion-fab-button {
   align-items: center;
   justify-content: center;
   grid-row: 1;
-  // We rely on auto-placement or explicit loops in HTML for column, 
-  // but since we are iterating days in order, flex/grid flow might work if we are careful.
-  // Actually, in HTML we didn't specify column for headers explicitly, 
-  // but grid auto-placement fills row 1. 
-  // Corner is 1, Days are 2-8.
+  padding: 8px 4px;
 }
 
 .grid-header-corner {
@@ -69,27 +65,29 @@ ion-fab-button {
 
 .grid-time-label {
   background: var(--ion-background-color);
-  text-align: center;
+  text-align: right;
   font-size: 11px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-right: 8px;
   grid-column: 1;
   border-right: 1px solid var(--ion-color-step-100);
 }
 
 .grid-cell {
   background: var(--ion-background-color);
-  // Grid lines created by gap
+  min-height: 70px;
+  position: relative;
 }
 
 .class-block {
   margin: 2px;
   padding: 2px;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 11px;
-  color: #333; // Ensure contrast or use var
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #000000; // Ensure contrast or use var
+  box-shadow: 0 1px 2px rgba(17, 9, 9, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,5 +115,5 @@ ion-fab-button {
   font-size: 10px;
   min-width: 65px;
   text-align: center;
-  color: #333;
+  color: #0a0505;
 }

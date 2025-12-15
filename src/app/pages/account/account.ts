@@ -96,6 +96,11 @@ export class AccountPage implements AfterViewInit {
     console.log(this.aluno);
   }
 
+  getNomeFormatado(): string {
+    if (!this.aluno?.nome) return '';
+    return this.aluno.nome.replace(/\s*ALUNO\s*MDS\s*/gi, ' ').trim();
+  }
+
   changePassword() {
     console.log('Clicked to change password');
   }

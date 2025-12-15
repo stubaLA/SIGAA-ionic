@@ -119,6 +119,24 @@ export class SchedulePage {
     '16:00': 6, '18:00': 7, '20:00': 8, '22:00': 9
   };
 
+  getRowForTime(horaInicio: string): number {
+    if (this.timeMap[horaInicio]) {
+      return this.timeMap[horaInicio];
+    }
+    // Se não encontrar exato, tenta encontrar o slot mais próximo
+    const [hours, minutes] = horaInicio.split(':').map(Number);
+    const timeInMinutes = hours * 60 + minutes;
+    
+    for (const slot of this.timeSlots) {
+      const [slotHours, slotMinutes] = slot.start.split(':').map(Number);
+      const slotTimeInMinutes = slotHours * 60 + slotMinutes;
+      if (Math.abs(timeInMinutes - slotTimeInMinutes) <= 30) {
+        return this.timeMap[slot.start];
+      }
+    }
+    return 0;
+  }
+
   gridEvents: any[] = [];
 
   // Gets a reference to the list element
@@ -151,20 +169,24 @@ export class SchedulePage {
       });
       this.matriculasLidas = true;
     }
+    this.matriculaConfirmada = this.matriculaService.verificarMatriculaConfirmada();
   }
 
   processSchedule() {
     this.gridEvents = [];
     for (const matricula of this.matriculas) {
-      if (matricula.status === 'Matriculado' && matricula.turma && matricula.turma.horario) {
+      if ((matricula.status === 'Matriculado' || matricula.status === 'Confirmado') && matricula.turma && matricula.turma.horario) {
         for (const h of matricula.turma.horario) {
-          if (this.dayMap[h.dia] && this.timeMap[h.horaInicio]) {
-            this.gridEvents.push({
-              subjectCode: matricula.turma.disciplina.codigo,
-              col: this.dayMap[h.dia],
-              row: this.timeMap[h.horaInicio],
-              color: this.getColorForSubject(matricula.turma.disciplina.codigo) // Optional: generate color
-            });
+          if (this.dayMap[h.dia]) {
+            const row = this.getRowForTime(h.horaInicio);
+            if (row > 0) {
+              this.gridEvents.push({
+                subjectCode: matricula.turma.disciplina.codigo,
+                col: this.dayMap[h.dia],
+                row: row,
+                color: this.getColorForSubject(matricula.turma.disciplina.codigo)
+              });
+            }
           }
         }
       }
@@ -172,13 +194,7 @@ export class SchedulePage {
   }
 
   getColorForSubject(code: string) {
-    // Simple hash to color or sequential palette
-    const colors = ['#e6f7ff', '#f9f0ff', '#fff7e6', '#e6fffa', '#fff0f6', '#f0f5ff'];
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      hash = code.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
+    return '#e6f7ff'; // Azul claro
   }
 
   confirmarMatricula() {
