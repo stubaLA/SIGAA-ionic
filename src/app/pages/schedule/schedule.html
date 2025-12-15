@@ -5,29 +5,90 @@
     </ion-buttons>
     <ion-title>Matrícula 2026.1</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="segment">
+      <ion-segment-button value="list">
+        Lista
+      </ion-segment-button>
+      <ion-segment-button value="grid">
+        Grade
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
+  @if (segment === 'list') {
   @if( matriculas.length > 0) {
   <ion-list #scheduleList>
-      @for (matricula of matriculas; track matricula.id) {
-        <ion-item routerLink="/app/tabs/schedule/session/{{matricula.id}}">
-          <ion-label>
-            <h3>{{matricula.turma.disciplina.codigo}} - {{matricula.turma.disciplina.nome}}</h3>
-            <h3>{{matricula.turma.codigo}}</h3>
-            @for (horario of matricula.turma.horario; track horario.dia) {
-            <p>{{horario.dia}}: {{horario.horaInicio}} &mdash; {{horario.horaFim}}</p>
-            }  
-            <p>
-              {{matricula.status}}
-            </p>
-          </ion-label>
-        </ion-item>
-
-      }
+    @for (matricula of matriculas; track matricula.id) {
+    <ion-item routerLink="/app/tabs/schedule/session/{{matricula.id}}">
+      <ion-label>
+        <h3>{{matricula.turma.disciplina.codigo}} - {{matricula.turma.disciplina.nome}}</h3>
+        <h3>{{matricula.turma.codigo}}</h3>
+        @for (horario of matricula.turma.horario; track horario.dia) {
+        <p>{{horario.dia}}: {{horario.horaInicio}} &mdash; {{horario.horaFim}}</p>
+        }
+        <p>
+          {{matricula.status}}
+        </p>
+      </ion-label>
+    </ion-item>
+    }
   </ion-list>
   }
   @if (!matriculaConfirmada) {
-    <ion-button (click)="confirmarMatricula()" disabled="{{verificarMatricula()}}">Confirmar</ion-button>
+  <ion-button (click)="confirmarMatricula()" disabled="{{verificarMatricula()}}">Solicitar Matrícula</ion-button>
+  }
+  }
+
+  @if (segment === 'grid') {
+  <div class="subject-summary">
+    <ion-list>
+      <ion-list-header>Disciplinas Matriculadas</ion-list-header>
+      @for (matricula of matriculas; track matricula.id) {
+      @if (matricula.status === 'Matriculado') {
+      <ion-item lines="none">
+        <ion-label class="compact-label">
+          <span class="badge" [style.background-color]="getColorForSubject(matricula.turma.disciplina.codigo)">
+            {{matricula.turma.disciplina.codigo}}
+          </span>
+          {{matricula.turma.disciplina.nome}}
+        </ion-label>
+      </ion-item>
+      }
+      }
+    </ion-list>
+  </div>
+
+  <div class="schedule-grid-container">
+    <div class="schedule-grid">
+      <!-- Header Row -->
+      <div class="grid-header-corner"></div>
+      @for (day of days; track day) {
+      <div class="grid-header-day">{{ day }}</div>
+      }
+
+      <!-- Time Labels -->
+      @for (slot of timeSlots; track slot.start) {
+      <div class="grid-time-label" [style.grid-row]="timeMap[slot.start]">{{ slot.label }}</div>
+      }
+
+      <!-- Grid Cells (Background) -->
+      @for (slot of timeSlots; track slot.start) {
+      @for (day of days; track day) {
+      <div class="grid-cell" [style.grid-row]="timeMap[slot.start]" [style.grid-column]="dayMap[day]"></div>
+      }
+      }
+
+      <!-- Class Blocks -->
+      @for (event of gridEvents; track event) {
+      <div class="class-block" [style.grid-column]="event.col" [style.grid-row]="event.row"
+        [style.background-color]="event.color">
+        <span class="code">{{ event.subjectCode }}</span>
+      </div>
+      }
+    </div>
+  </div>
   }
 </ion-content>

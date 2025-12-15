@@ -18,9 +18,9 @@ export class MatriculaService {
 
   constructor(
   ) {
-    this.getMatriculas().subscribe(()=>{
+    this.getMatriculas().subscribe(() => {
       console.log(this.data);
-    })  
+    })
   }
 
   load() {
@@ -97,6 +97,11 @@ export class MatriculaService {
 
   confirmarMatricula() {
     this.matriculaConfirmada = true;
+    for (let matricula of this.data.matriculas) {
+      if (matricula.status == 'Confirmado') {
+        matricula.status = 'Matriculado';
+      }
+    }
   }
 
   verificarMatriculaConfirmada() {
